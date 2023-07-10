@@ -113,13 +113,13 @@ class InfoExtractorV1 :
 
         summaries_string = ' '.join(summarisedContent)
         finalSummary = gptAgent.open_ai_gpt4_call(summaries_string, summaryOfSummaryPrompt)
-        answerUserQuestionsPrompt = f"""Pretend you are a expert at answering someone's questions, in the most concise and easy-to-digest way. Here are the following questions; I want
+        answerUserQuestionsPrompt = f"""Based on the information provided, Here are the following questions; I want
                                     you to answer them as follows :
                                     1. (your answer here)
                                     2. (your answer here)
                                     etc
-                                    Here are the questions : {questions}"""
-        questionAnswering = gptAgent.open_ai_gpt4_call(answerUserQuestionsPrompt)
+                                    , and answer the questions based on the content provided to you. Here are the questions : {questions}"""
+        questionAnswering = gptAgent.open_ai_gpt4_call(summaries_string, answerUserQuestionsPrompt)
         return finalSummary, questionAnswering
     def final_summarisation_calls(self, path, summarisedAmount, questions):   
         rawFacts = self.info_chunker(path, summarisedAmount)
@@ -132,5 +132,6 @@ class InfoExtractorV1 :
 
 path = "C:\\Users\\david\\Desktop\\Edukai\\AI models\\Info extractor\\HoI_IV_Strategy_Guide.pdf"
 test = InfoExtractorV1()
-infoExtraction = test.final_summarisation_calls(path, 6000)
-print(infoExtraction)
+questions = ['How does this pdf file relate to implemnetation of LLMS for stock market analysis?' 'What exactly does this PDF have to do with AI?' 'Does this document say anything about how to make more realistic CGI?']
+infoExtraction = test.final_summarisation_calls(path, 6000, questions)
+print(infoExtraction)   
