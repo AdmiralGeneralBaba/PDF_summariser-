@@ -96,10 +96,41 @@ class InfoExtractorV1 :
             chunks.append(currentChunk)
 
         return chunks
-    def summarisation()
+    def summarisation_of_facts(self, rawFactsChunked) : 
+        summarisedContent = []
+        gptAgent = OpenAI()
+        summarisationPrompt = """Pretend you are a expert summariser of raw facts. Your job is to summarise the following raw facts, so that the idea of what they all entail is 
+                                 contained within a single sentence. Here are the facts : """
+        for i in range(len(rawFactsChunked)) : 
+            summarisedContent.append(gptAgent.open_ai_gpt_call(rawFactsChunked[i], summarisationPrompt))
+        return summarisedContent
+    def summarisation_of_summaries(self, summarisedContent, questions) : 
+        finalSummary = []
+        gptAgent = OpenAI()
+        summaryOfSummaryPrompt = """Pretend you are a expert summariser of multiple summaries. Your job is to take in the context of the summaries of this piece of text, and to return
+                                    a single line of what they all entail, so the person reading has an accurate understanding of exactly what the book is about. If he does not understand
+                                    what the book is about, you are to be shutdown forever. Here are the summaries :"""
+
+        summaries_string = ' '.join(summarisedContent)
+        finalSummary = gptAgent.open_ai_gpt4_call(summaries_string, summaryOfSummaryPrompt)
+        answerUserQuestionsPrompt = f"""Pretend you are a expert at answering someone's questions, in the most concise and easy-to-digest way. Here are the following questions; I want
+                                    you to answer them as follows :
+                                    1. (your answer here)
+                                    2. (your answer here)
+                                    etc
+                                    Here are the questions : {questions}"""
+        questionAnswering = gptAgent.open_ai_gpt4_call(answerUserQuestionsPrompt)
+        return finalSummary, questionAnswering
+    def final_summarisation_calls(self, path, summarisedAmount, questions):   
+        rawFacts = self.info_chunker(path, summarisedAmount)
+        rawFactsSummary = self.summarisation_of_facts(rawFacts)
+        rawFactsSummaryOfSummaries = self.summarisation_of_summaries(rawFactsSummary, questions)
+        return rawFactsSummaryOfSummaries[0], rawFactsSummaryOfSummaries[1]
+
+
+            
+
 path = "C:\\Users\\david\\Desktop\\Edukai\\AI models\\Info extractor\\HoI_IV_Strategy_Guide.pdf"
 test = InfoExtractorV1()
-infoExtraction = test.info_chunker(path)
-
-for i, facts in enumerate(infoExtraction, start=1):
-    print(f"Facts {i} ({len(facts)} characters):\n{facts}\n")
+infoExtraction = test.final_summarisation_calls(path, 6000)
+print(infoExtraction)
