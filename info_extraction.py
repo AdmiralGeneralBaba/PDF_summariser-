@@ -20,7 +20,7 @@ class InfoExtractorV1 :
             words = text.split()
             for word in words:
                 current_chunk.append(word)
-                if len(current_chunk) >= 2500:
+                if len(current_chunk) >= 2000:
                     chunks.append(' '.join(current_chunk))
                     current_chunk = []
 
@@ -36,7 +36,7 @@ class InfoExtractorV1 :
 
         for word in string_array:
             # Check if adding this word would make the chunk longer than 3000 characters
-            if len(' '.join(current_chunk + [word])) > 3000:
+            if len(' '.join(current_chunk + [word])) > 2000:
                 # If so, add the current chunk to the list of chunks and start a new chunk
                 chunks.append(' '.join(current_chunk))
                 current_chunk = []
@@ -128,10 +128,11 @@ class InfoExtractorV1 :
         return rawFactsSummaryOfSummaries[0], rawFactsSummaryOfSummaries[1]
 
 
-            
 
-path = "C:\\Users\\david\\Desktop\\Edukai\\AI models\\Info extractor\\HoI_IV_Strategy_Guide.pdf"
+
+path = "C:\\Users\\david\\Desktop\\Linkedin\\Linkedin posts\\04-08-2023LongnetPost\\Longnet paper.pdf"
+
 test = InfoExtractorV1()
-questions = ['How does this pdf file relate to implemnetation of LLMS for stock market analysis?' 'What exactly does this PDF have to do with AI?' 'Does this document say anything about how to make more realistic CGI?']
+questions = ['Just give the summary of all the key, interesting points to add into a linkedin post about it. The points must be very simple, and straight to point; nothing that is too complex, as it is meant for average people, so only give out the WOW factor facts.']
 infoExtraction = test.final_summarisation_calls(path, 6000, questions)
 print(infoExtraction)   
